@@ -1,0 +1,42 @@
+[build]
+  command = "pnpm run build && cd netlify/functions && npm install"
+  functions = "netlify/functions"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Prerender for social media bots and crawlers
+[[redirects]]
+  from = "/:username"
+  to = "/.netlify/functions/prerender"
+  status = 200
+  conditions = {User-Agent = ["facebookexternalhit", "twitterbot", "googlebot", "bingbot", "linkedinbot", "whatsapp", "slackbot", "discordbot", "telegrambot", "applebot", "yandexbot"]}
+
+# API routes
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Static assets
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+
+# Fallback to React app for regular users
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[dev]
+  command = "pnpm run dev"
+  port = 3000
+  publish = "dist"
+  functions = "netlify/functions"
